@@ -40,6 +40,13 @@ if [[ "$KEEP_NOTES" != "1" ]]; then
 fi
 
 DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-"https://github.com/steipete/Trimmy/releases/download/v${VERSION}/"}
+WORK_DIR=$(mktemp -d)
+trap 'rm -rf "$WORK_DIR"; if [[ "$KEEP_NOTES" != "1" ]]; then rm -f "$NOTES_HTML"; fi' EXIT
+cp "$ZIP" "$WORK_DIR/$ZIP_NAME"
+cp "$NOTES_HTML" "$WORK_DIR/${ZIP_BASE}.html"
+if [[ -f "$ROOT/appcast.xml" ]]; then
+  cp "$ROOT/appcast.xml" "$WORK_DIR/appcast.xml"
+fi
 
 if ! command -v generate_appcast >/dev/null; then
   echo "generate_appcast not found in PATH. Install Sparkle tools (see Sparkle docs)." >&2
@@ -51,6 +58,9 @@ generate_appcast \
   --download-url-prefix "$DOWNLOAD_URL_PREFIX" \
   --embed-release-notes \
   --link "$FEED_URL" \
-  "$ZIP_DIR"
+  --maximum-deltas 0 \
+  "$WORK_DIR"
+
+cp "$WORK_DIR/appcast.xml" "$ROOT/appcast.xml"
 
 echo "Appcast generated (appcast.xml). Upload alongside $ZIP at $FEED_URL"

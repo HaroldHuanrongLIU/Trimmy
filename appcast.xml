@@ -3,7 +3,7 @@
     <channel>
         <item>
             <title>0.9.0</title>
-            <pubDate>Mon, 11 May 2026 12:54:57 +0100</pubDate>
+            <pubDate>Mon, 11 May 2026 12:56:20 +0100</pubDate>
             <link>https://raw.githubusercontent.com/steipete/Trimmy/main/appcast.xml</link>
             <sparkle:version>29</sparkle:version>
             <sparkle:shortVersionString>0.9.0</sparkle:shortVersionString>
@@ -18,10 +18,6 @@
 <p><a href="https://github.com/steipete/Trimmy/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
             <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.9.0/Trimmy-0.9.0.zip" length="2630308" type="application/octet-stream" sparkle:edSignature="2aCjCUymQxStjqJcjeIs0LcYjRZGTLA4I2UaTTfIKXscC7TDLkQPBG1t80Qzfpna+0npJMS/OS8Uw2XnxFFQBQ=="/>
-            <sparkle:deltas>
-                <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.9.0/Trimmy29-28.delta" sparkle:deltaFrom="28" length="194770" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="860528" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="kiFdyojnbWWGEo6hBAvwCRrm+wZOsmQ+WH0OesoWRZNPMzyDCJ2ooAo8RVFq2T+u9RjESv/6NSG0PDB1QgPfBw=="/>
-                <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.9.0/Trimmy29-27.delta" sparkle:deltaFrom="27" length="202422" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="860528" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="5g2+DRDoc/RUfoXKbQonT4nhiBy/U/leDdTCZ0Rg71v7C5xTNkNq8XNVXTTepDDI5axrYe+DtwSTkIPaREGJBA=="/>
-            </sparkle:deltas>
         </item>
         <item>
             <title>0.8.0</title>
@@ -30,10 +26,14 @@
             <sparkle:version>28</sparkle:version>
             <sparkle:shortVersionString>0.8.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.9.0/Trimmy-0.8.0.zip" length="2614209" type="application/octet-stream" sparkle:edSignature="IhZI64vmnT/SV7m3byb3r5rO9xYMxStwuGFS10r+2XjMpvbJrXy8dHj3Ete56b8ynGDz59312IpzFb3vhTXJCw=="/>
-            <sparkle:deltas>
-                <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.8.0/Trimmy28-27.delta" sparkle:deltaFrom="27" length="93318" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="860528" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="wpADv2hH9LHFBsJy1hvVJFd3Z+dz/UAp4huJ+3rqhQyTkJZBPgfzg6cmQIRNag4HT+4PETuHR7gpBNYJqzHrCw=="/>
-            </sparkle:deltas>
+            <description><![CDATA[<h2>Trimmy 0.8.0</h2>
+<ul>
+<li>Added a menu-only “Paste Reformatted Markdown” action to join wrapped markdown paragraphs and bullet lists while preserving blank lines and fenced code blocks.</li>
+<li>Path quoting now only wraps standalone paths (not commands or sentences) when they contain spaces (#17, thanks @n0an).</li>
+</ul>
+<p><a href="https://github.com/steipete/Trimmy/blob/main/CHANGELOG.md">View full changelog</a></p>
+]]></description>
+            <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.8.0/Trimmy-0.8.0.zip" length="2614209" type="application/octet-stream" sparkle:edSignature="IhZI64vmnT/SV7m3byb3r5rO9xYMxStwuGFS10r+2XjMpvbJrXy8dHj3Ete56b8ynGDz59312IpzFb3vhTXJCw=="/>
         </item>
         <item>
             <title>0.7.0</title>
@@ -42,7 +42,7 @@
             <sparkle:version>27</sparkle:version>
             <sparkle:shortVersionString>0.7.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.9.0/Trimmy-0.7.0.zip" length="2600177" type="application/octet-stream" sparkle:edSignature="B+bEH+Xyqqaj6TiufWSyxHl0Ag1oKCrR32RGAlFa2kQQ9E3ahzAemQ49ZW6yUEWHNG/jJMJKq/3vVQ8AGj+tDw=="/>
+            <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.7.0/Trimmy-0.7.0.zip" length="2600177" type="application/octet-stream" sparkle:edSignature="B+bEH+Xyqqaj6TiufWSyxHl0Ag1oKCrR32RGAlFa2kQQ9E3ahzAemQ49ZW6yUEWHNG/jJMJKq/3vVQ8AGj+tDw=="/>
         </item>
         <title>Trimmy</title>
     </channel>
