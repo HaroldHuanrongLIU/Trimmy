@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## 0.9.0 — 2026-05-11
 - Claude Code: add optional prompt-decoration flattening for copied slash commands while preserving ordinary wrapped prose (#19, thanks @evoleinik).
 - Settings: add an option to hide the menu bar icon while keeping Trimmy running (#24, thanks @qazi0).
