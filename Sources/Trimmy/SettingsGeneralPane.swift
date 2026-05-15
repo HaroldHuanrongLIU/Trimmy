@@ -24,6 +24,37 @@ struct GeneralSettingsPane: View {
         .padding(.leading, 20)
     }
 
+    private var autoTrimExclusionsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Disable auto-trim for apps and sites")
+                .font(.body)
+            Text("One app name, bundle ID, or domain per line. Manual paste actions still work.")
+                .font(.footnote)
+                .foregroundStyle(.tertiary)
+
+            Text("Apps")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            TextEditor(text: self.$settings.autoTrimExcludedApps)
+                .font(.caption.monospaced())
+                .frame(height: 48)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1))
+
+            Text("Sites")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            TextEditor(text: self.$settings.autoTrimExcludedSites)
+                .font(.caption.monospaced())
+                .frame(height: 48)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1))
+        }
+        .padding(.leading, 20)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             if !self.permissions.isTrusted {
@@ -33,6 +64,8 @@ struct GeneralSettingsPane: View {
                 title: "Auto-trim enabled",
                 subtitle: "Automatically trim clipboard content when it looks like a command.",
                 binding: self.$settings.autoTrimEnabled)
+
+            self.autoTrimExclusionsSection
 
             PreferenceToggleRow(
                 title: "Context-aware trimming",

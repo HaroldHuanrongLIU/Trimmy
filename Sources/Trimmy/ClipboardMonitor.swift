@@ -10,6 +10,7 @@ final class ClipboardMonitor: ObservableObject {
     private let trimmyMarker = NSPasteboard.PasteboardType("com.steipete.trimmy")
     private let accessibilityPermission: AccessibilityPermissionChecking
     private let sourceTracker: ClipboardSourceTracker
+    private let browserLocationProvider: BrowserLocationProviding
     private var timer: DispatchSourceTimer?
     private var lastSeenChangeCount: Int
     private var detector: CommandDetector {
@@ -34,11 +35,13 @@ final class ClipboardMonitor: ObservableObject {
         pasteboard: NSPasteboard = NSPasteboard.general,
         pasteRestoreDelay: DispatchTimeInterval = .milliseconds(200),
         pasteAction: (() -> Void)? = nil,
-        accessibilityPermission: AccessibilityPermissionChecking = AccessibilityPermissionManager())
+        accessibilityPermission: AccessibilityPermissionChecking = AccessibilityPermissionManager(),
+        browserLocationProvider: BrowserLocationProviding = BrowserLocationProvider())
     {
         self.settings = settings
         self.pasteboard = pasteboard
         self.accessibilityPermission = accessibilityPermission
+        self.browserLocationProvider = browserLocationProvider
         self.sourceTracker = ClipboardSourceTracker(
             settings: settings,
             pasteboard: pasteboard,
@@ -82,10 +85,20 @@ final class ClipboardMonitor: ObservableObject {
     }
 
     @discardableResult
-    private func trimClipboardIfNeeded(force: Bool = false, sourceContext: ClipboardSourceContext?) -> Bool {
+    func trimClipboardIfNeeded(force: Bool = false, sourceContext: ClipboardSourceContext?) -> Bool {
         let changeCount = self.pasteboard.changeCount
         self.lastSeenChangeCount = changeCount
         self.logTrimCheck(changeCount: changeCount, force: force)
+
+        guard self.settings.autoTrimEnabled || force else {
+            self.logTrimSkip(reason: "autoTrimDisabled", force: force)
+            return false
+        }
+
+        if !force, let sourceContext, self.shouldSkipAutoTrim(for: sourceContext) {
+            self.logTrimSkip(reason: "excludedSource", force: force)
+            return false
+        }
 
         guard let variants = self.makeVariants(force: force, ignoreMarker: force, sourceContext: sourceContext) else {
             self.logTrimSkip(reason: "noVariants", force: force)
@@ -95,11 +108,6 @@ final class ClipboardMonitor: ObservableObject {
                 self.updateSummary(with: raw)
                 return true
             }
-            return false
-        }
-
-        guard self.settings.autoTrimEnabled || force else {
-            self.logTrimSkip(reason: "autoTrimDisabled", force: force)
             return false
         }
 
@@ -240,6 +248,21 @@ final class ClipboardMonitor: ObservableObject {
             return
         }
         self.frontmostAppName = app.localizedName ?? "current app"
+    }
+
+    private func shouldSkipAutoTrim(for sourceContext: ClipboardSourceContext) -> Bool {
+        let host = self.settings.hasAutoTrimSiteExclusions
+            ? self.browserLocationProvider.currentHost(for: sourceContext)
+            : nil
+        guard self.settings.excludesAutoTrim(sourceContext: sourceContext, host: host) else {
+            return false
+        }
+
+        let currentText = self.readTextFromPasteboard(ignoreMarker: false)
+        self.cache(original: currentText, trimmed: nil)
+        let sourceName = host ?? sourceContext.appName ?? sourceContext.bundleIdentifier ?? "this app"
+        self.lastSummary = "Auto-trim skipped for \(sourceName)."
+        return true
     }
 
     private func logPasteboardChange(changeCount: Int, ignored: Bool) {

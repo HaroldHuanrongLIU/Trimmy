@@ -14,6 +14,14 @@ struct ClipboardMonitorTests {
         }
     }
 
+    private struct StubBrowserLocationProvider: BrowserLocationProviding {
+        let host: String?
+
+        func currentHost(for _: ClipboardSourceContext) -> String? {
+            self.host
+        }
+    }
+
     @Test
     func `clipboard text ignores marker`() {
         let settings = AppSettings()
@@ -78,6 +86,141 @@ struct ClipboardMonitorTests {
         #expect(didTrim == false)
         let clipboard = pasteboard.string(forType: .string)
         #expect(clipboard?.contains(where: \.isNewline) == true)
+    }
+
+    @Test
+    func `auto trim skips excluded app source`() {
+        let settings = AppSettings()
+        settings.autoTrimEnabled = true
+        settings.autoTrimExcludedApps = "com.openai.chat"
+        defer { settings.autoTrimExcludedApps = "" }
+        let pasteboard = makeTestPasteboard()
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
+        let sourceContext = ClipboardSourceContext(
+            timestamp: Date(),
+            capture: .eventTap,
+            bundleIdentifier: "com.openai.chat",
+            appName: "ChatGPT",
+            processIdentifier: nil)
+
+        pasteboard.setString(
+            """
+            echo hi \\
+            ls -la
+            """,
+            forType: .string)
+
+        let didTrim = monitor.trimClipboardIfNeeded(force: false, sourceContext: sourceContext)
+        #expect(didTrim == false)
+        #expect(pasteboard.string(forType: .string)?.contains(where: \.isNewline) == true)
+        #expect(monitor.lastSummary.contains("Auto-trim skipped"))
+    }
+
+    @Test
+    func `manual trim still works for excluded app source`() {
+        let settings = AppSettings()
+        settings.autoTrimEnabled = true
+        settings.autoTrimExcludedApps = "ChatGPT"
+        defer { settings.autoTrimExcludedApps = "" }
+        let pasteboard = makeTestPasteboard()
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
+        let sourceContext = ClipboardSourceContext(
+            timestamp: Date(),
+            capture: .eventTap,
+            bundleIdentifier: "com.openai.chat",
+            appName: "ChatGPT",
+            processIdentifier: nil)
+
+        pasteboard.setString(
+            """
+            echo hi \\
+            ls -la
+            """,
+            forType: .string)
+
+        let didTrim = monitor.trimClipboardIfNeeded(force: true, sourceContext: sourceContext)
+        #expect(didTrim)
+        #expect(pasteboard.string(forType: .string)?.contains(where: \.isNewline) == false)
+    }
+
+    @Test
+    func `excluded auto trim refreshes manual paste cache`() {
+        let settings = AppSettings()
+        settings.autoTrimEnabled = true
+        settings.autoTrimExcludedApps = "ChatGPT"
+        defer { settings.autoTrimExcludedApps = "" }
+        var pasteTriggered = false
+        let pasteboard = makeTestPasteboard()
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            pasteRestoreDelay: .seconds(60),
+            pasteAction: { pasteTriggered = true },
+            accessibilityPermission: StubAccessibilityPermission())
+        let sourceContext = ClipboardSourceContext(
+            timestamp: Date(),
+            capture: .eventTap,
+            bundleIdentifier: "com.openai.chat",
+            appName: "ChatGPT",
+            processIdentifier: nil)
+
+        pasteboard.setString(
+            """
+            echo old \\
+            ls
+            """,
+            forType: .string)
+        #expect(monitor.trimClipboardIfNeeded(force: false) == true)
+
+        pasteboard.setString(
+            """
+            echo new \\
+            pwd
+            """,
+            forType: .string)
+        #expect(monitor.trimClipboardIfNeeded(force: false, sourceContext: sourceContext) == false)
+
+        #expect(monitor.pasteTrimmed())
+        #expect(pasteTriggered)
+        #expect(pasteboard.string(forType: .string) == "echo new pwd")
+    }
+
+    @Test
+    func `auto trim skips excluded browser site`() {
+        let settings = AppSettings()
+        settings.autoTrimEnabled = true
+        settings.autoTrimExcludedSites = "grok.com"
+        defer { settings.autoTrimExcludedSites = "" }
+        let pasteboard = makeTestPasteboard()
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission(),
+            browserLocationProvider: StubBrowserLocationProvider(host: "chat.grok.com"))
+        let sourceContext = ClipboardSourceContext(
+            timestamp: Date(),
+            capture: .eventTap,
+            bundleIdentifier: "com.google.Chrome",
+            appName: "Google Chrome",
+            processIdentifier: nil)
+
+        pasteboard.setString(
+            """
+            echo hi \\
+            ls -la
+            """,
+            forType: .string)
+
+        let didTrim = monitor.trimClipboardIfNeeded(force: false, sourceContext: sourceContext)
+        #expect(didTrim == false)
+        #expect(pasteboard.string(forType: .string)?.contains(where: \.isNewline) == true)
+        #expect(monitor.lastSummary.contains("chat.grok.com"))
     }
 
     @Test

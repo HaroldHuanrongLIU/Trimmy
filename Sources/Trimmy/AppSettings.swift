@@ -8,6 +8,8 @@ public final class AppSettings: ObservableObject {
     @AppStorage("terminalAggressiveness") public var terminalAggressiveness: Aggressiveness = .normal
     @AppStorage("preserveBlankLines") public var preserveBlankLines: Bool = false
     @AppStorage("autoTrimEnabled") public var autoTrimEnabled: Bool = true
+    @AppStorage("autoTrimExcludedApps") public var autoTrimExcludedApps: String = ""
+    @AppStorage("autoTrimExcludedSites") public var autoTrimExcludedSites: String = ""
     @AppStorage("contextAwareTrimmingEnabled") public var contextAwareTrimmingEnabled: Bool = true
     @AppStorage("removeBoxDrawing") public var removeBoxDrawing: Bool = true
     @AppStorage("hideMenuBarIcon") var hideMenuBarIcon: Bool = false

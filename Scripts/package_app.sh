@@ -78,6 +78,7 @@ patch_keyboard_shortcuts
 
 swift build -c "$CONF"
 APP="$ROOT/Trimmy.app"
+APP_ENTITLEMENTS="$ROOT/Trimmy.entitlements"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 mkdir -p "$APP/Contents/Helpers"
@@ -115,6 +116,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleVersion</key><string>29</string>
     <key>LSMinimumSystemVersion</key><string>15.0</string>
     <key>LSUIElement</key><true/>
+    <key>NSAppleEventsUsageDescription</key><string>Trimmy reads the active browser URL only to honor your site auto-trim blocklist.</string>
     <key>CFBundleIconFile</key><string>Icon</string>
     <key>NSHumanReadableCopyright</key><string>2026 Peter Steinberger. MIT License.</string>
     <key>TrimmyBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
@@ -180,6 +182,6 @@ find "$APP" -name '._*' -delete
 
 # Sign the app bundle after cleanup
 CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Peter Steinberger (Y5PE65HELJ)}"
-codesign --force --timestamp --options runtime --sign "$CODESIGN_ID" "$APP"
+codesign --force --timestamp --options runtime --entitlements "$APP_ENTITLEMENTS" --sign "$CODESIGN_ID" "$APP"
 
 echo "Created $APP"

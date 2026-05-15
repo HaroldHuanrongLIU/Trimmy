@@ -24,6 +24,8 @@
 	<true/>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Trimmy reads the active browser URL only to honor your site auto-trim blocklist.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>2026 Peter Steinberger. MIT License.</string>
 </dict>

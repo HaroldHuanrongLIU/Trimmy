@@ -5,6 +5,7 @@ APP_NAME="Trimmy"
 APP_IDENTITY="Developer ID Application: Peter Steinberger (Y5PE65HELJ)"
 APP_BUNDLE="Trimmy.app"
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+APP_ENTITLEMENTS="$ROOT/Trimmy.entitlements"
 source "$ROOT/version.env"
 ZIP_NAME="Trimmy-0.9.0.zip"
 DSYM_ZIP="Trimmy-${MARKETING_VERSION}.dSYM.zip"
@@ -35,7 +36,7 @@ swift build -c release --arch arm64
 ./Scripts/package_app.sh release
 
 echo "Signing with $APP_IDENTITY"
-codesign --force --deep --options runtime --timestamp --sign "$APP_IDENTITY" "$APP_BUNDLE"
+codesign --force --deep --options runtime --timestamp --entitlements "$APP_ENTITLEMENTS" --sign "$APP_IDENTITY" "$APP_BUNDLE"
 
 # Zip for notarization (prefer system ditto)
 DITTO_BIN=${DITTO_BIN:-/usr/bin/ditto}

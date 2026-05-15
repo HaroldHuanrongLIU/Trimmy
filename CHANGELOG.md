@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Auto-trim can now be disabled for configured apps and browser sites while keeping manual paste actions available (#15).
 - Menu: add an optional “Paste without Query Params” action for copied URLs,
   gated by Settings → General and preserving configured content-identity
   parameters (#27, thanks @danfooo).
