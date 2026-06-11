@@ -2,60 +2,92 @@ import SwiftUI
 import TrimmyCore
 
 @MainActor
-struct AggressivenessSettingsPane: View {
+struct TrimmingSettingsPane: View {
     @ObservedObject var settings: AppSettings
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 10) {
-                GridRow {
-                    Text("General apps")
-                        .frame(minWidth: 110, alignment: .leading)
-                    Picker("", selection: self.$settings.generalAggressiveness) {
-                        ForEach(GeneralAggressiveness.allCases) { level in
-                            Text(level.title).tag(level)
+        SettingsPaneLayout {
+            SettingsSection(
+                "Sensitivity",
+                systemImage: "gauge.with.dots.needle.67percent",
+                subtitle: "Set how readily Trimmy flattens command-shaped text in regular apps and terminals.")
+            {
+                VStack(alignment: .leading, spacing: 14) {
+                    Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 12) {
+                        GridRow {
+                            Text("General apps")
+                                .frame(minWidth: 120, alignment: .leading)
+                            Picker("", selection: self.$settings.generalAggressiveness) {
+                                ForEach(GeneralAggressiveness.allCases) { level in
+                                    Text(level.title).tag(level)
+                                }
+                            }
+                            .labelsHidden()
+                            .pickerStyle(.menu)
+                            .frame(minWidth: 190, alignment: .leading)
                         }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.menu)
-                    .frame(minWidth: 180, alignment: .leading)
-                }
 
-                GridRow {
-                    Text("Terminals")
-                        .frame(minWidth: 110, alignment: .leading)
-                    Picker("", selection: self.$settings.terminalAggressiveness) {
-                        ForEach(Aggressiveness.allCases) { level in
-                            Text(level.title).tag(level)
+                        GridRow {
+                            Text("Terminals")
+                                .frame(minWidth: 120, alignment: .leading)
+                            Picker("", selection: self.$settings.terminalAggressiveness) {
+                                ForEach(Aggressiveness.allCases) { level in
+                                    Text(level.title).tag(level)
+                                }
+                            }
+                            .labelsHidden()
+                            .pickerStyle(.menu)
+                            .frame(minWidth: 190, alignment: .leading)
                         }
                     }
-                    .labelsHidden()
-                    .pickerStyle(.menu)
-                    .frame(minWidth: 180, alignment: .leading)
+
+                    Divider()
+
+                    PreferenceToggleRow(
+                        title: "Use terminal-specific sensitivity",
+                        subtitle: "Apply the terminal level when Trimmy detects a terminal copy.",
+                        binding: self.$settings.contextAwareTrimmingEnabled)
                 }
             }
 
-            Text(
-                """
-                Automatic trimming uses separate aggressiveness levels for regular apps and terminals. \
-                The terminal setting only applies when Context-aware trimming is enabled. “None” disables \
-                command flattening for regular apps, but manual “Paste Trimmed” always runs at High. \
-                Low/Normal skip code-like snippets (braces + language keywords) unless there are strong \
-                command cues. Leading shell prompts (#/$) are stripped when they look like commands, but \
-                Markdown-style headings stay.
-                """)
-                .font(.footnote)
-                .foregroundStyle(.tertiary)
-                .fixedSize(horizontal: false, vertical: true)
+            SettingsSection(
+                "Cleanup",
+                systemImage: "wand.and.stars",
+                subtitle: "Fine-tune what Trimmy removes while preparing clipboard text.")
+            {
+                VStack(alignment: .leading, spacing: 16) {
+                    PreferenceToggleRow(
+                        title: "Keep blank lines",
+                        subtitle: "Preserve intentional paragraph breaks instead of collapsing them.",
+                        binding: self.$settings.preserveBlankLines)
 
-            AggressivenessPreview(
-                level: self.settings.generalAggressiveness,
-                preserveBlankLines: self.settings.preserveBlankLines,
-                removeBoxDrawing: self.settings.removeBoxDrawing)
-                .padding(.top, 2)
+                    Divider()
+
+                    PreferenceToggleRow(
+                        title: "Remove box-drawing gutters",
+                        subtitle: "Strip prompt-style │ and ┃ characters before trimming.",
+                        binding: self.$settings.removeBoxDrawing)
+
+                    Divider()
+
+                    PreferenceToggleRow(
+                        title: "Flatten Claude Code prompts",
+                        subtitle: "Remove ❯ and ─── decoration and join wrapped Claude Code prompts.",
+                        binding: self.$settings.flattenClaudeCodePrompts)
+                }
+            }
+
+            SettingsSection(
+                "Preview",
+                systemImage: "rectangle.split.2x1",
+                subtitle: "Manual “Paste Trimmed” always uses High; this preview follows the General apps level.")
+            {
+                AggressivenessPreview(
+                    level: self.settings.generalAggressiveness,
+                    preserveBlankLines: self.settings.preserveBlankLines,
+                    removeBoxDrawing: self.settings.removeBoxDrawing)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 12)
     }
 }
 
@@ -79,15 +111,28 @@ struct AggressivenessPreview: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: 8) {
-                PreviewCard(title: "Before", text: self.example.sample)
-                PreviewCard(
-                    title: "After",
-                    text: AggressivenessPreviewEngine.previewAfter(
-                        for: self.example.sample,
-                        level: self.level.coreAggressiveness,
-                        preserveBlankLines: self.preserveBlankLines,
-                        removeBoxDrawing: self.removeBoxDrawing))
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 12) {
+                    PreviewCard(title: "Before", text: self.example.sample)
+                    PreviewCard(
+                        title: "After",
+                        text: AggressivenessPreviewEngine.previewAfter(
+                            for: self.example.sample,
+                            level: self.level.coreAggressiveness,
+                            preserveBlankLines: self.preserveBlankLines,
+                            removeBoxDrawing: self.removeBoxDrawing))
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    PreviewCard(title: "Before", text: self.example.sample)
+                    PreviewCard(
+                        title: "After",
+                        text: AggressivenessPreviewEngine.previewAfter(
+                            for: self.example.sample,
+                            level: self.level.coreAggressiveness,
+                            preserveBlankLines: self.preserveBlankLines,
+                            removeBoxDrawing: self.removeBoxDrawing))
+                }
             }
 
             if let note = self.example.note {
@@ -232,7 +277,12 @@ private struct PreviewCard: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(10)
-        .background(.quinary)
-        .cornerRadius(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(nsColor: .textBackgroundColor))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        }
     }
 }

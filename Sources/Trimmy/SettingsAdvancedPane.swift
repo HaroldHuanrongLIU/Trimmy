@@ -7,27 +7,47 @@ struct AdvancedSettingsPane: View {
     @State private var cliStatus: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            PreferenceToggleRow(
-                title: "Use extra clipboard fallbacks",
-                subtitle: "Try RTF and public text types when plain text is missing.",
-                binding: self.$settings.usePasteboardFallbacks)
+        SettingsPaneLayout {
+            SettingsSection(
+                "Clipboard compatibility",
+                systemImage: "doc.on.clipboard",
+                subtitle: "Optional compatibility behavior for apps that publish unusual clipboard formats.")
+            {
+                PreferenceToggleRow(
+                    title: "Use extra clipboard fallbacks",
+                    subtitle: "Try RTF and public text types when plain text is missing.",
+                    binding: self.$settings.usePasteboardFallbacks)
+            }
 
-            self.cliInstallerSection
+            SettingsSection(
+                "Command line",
+                systemImage: "terminal",
+                subtitle: "Install the bundled TrimmyCLI helper for scripts and shell pipelines.")
+            {
+                self.cliInstallerSection
+            }
 
             #if DEBUG
-            PreferenceToggleRow(
-                title: "Enable debug tools",
-                subtitle: "Show the Debug tab for sample previews and dev-only controls.",
-                binding: self.$settings.debugPaneEnabled)
+            SettingsSection(
+                "Developer",
+                systemImage: "hammer",
+                subtitle: "Development-only controls for local builds.")
+            {
+                PreferenceToggleRow(
+                    title: "Enable debug tools",
+                    subtitle: "Show the Debug tab for sample previews and dev-only controls.",
+                    binding: self.$settings.debugPaneEnabled)
+            }
             #endif
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 12)
     }
 
     private var cliInstallerSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Links `trimmy` into /usr/local/bin and /opt/homebrew/bin.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+
             HStack(spacing: 10) {
                 Button {
                     Task { await self.installCLI() }
@@ -47,12 +67,6 @@ struct AdvancedSettingsPane: View {
                         .lineLimit(2)
                 }
             }
-
-            Text("Install `trimmy` into /usr/local/bin and /opt/homebrew/bin.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

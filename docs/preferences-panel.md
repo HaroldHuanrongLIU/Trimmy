@@ -9,6 +9,16 @@ read_when:
 
 Goal: ship a real macOS Settings window (⌘,) using only SwiftUI—no custom AppKit controllers. You get toolbar-style tabs, grouped two-column rows, and modern window behavior out of the box.
 
+## Current Trimmy organization
+- **General**: auto-trim, optional menu actions, launch and menu-bar behavior.
+- **Trimming**: regular-app and terminal sensitivity, cleanup options, live preview.
+- **Rules**: app/site auto-trim exclusions and preserved URL query parameters.
+- **Shortcuts**: global paste and auto-trim shortcuts.
+- **Advanced**: clipboard compatibility, CLI installer, development tools.
+- **About**: version, links, license, and update controls.
+
+Use `SettingsPaneLayout`, `SettingsSection`, and `SettingsTextEditor` for new controls so spacing, scrolling, and editor treatment remain consistent.
+
 ## 1) Wire the Settings scene
 ```swift
 @main

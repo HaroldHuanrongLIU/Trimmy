@@ -11,23 +11,25 @@ struct SettingsView: View {
 
     var body: some View {
         TabView(selection: self.$selectedTab) {
-            ScrollView {
-                GeneralSettingsPane(settings: self.settings, permissions: self.permissions)
-            }
-            .tabItem { Label("General", systemImage: "gearshape") }
-            .tag(SettingsTab.general)
+            GeneralSettingsPane(settings: self.settings, permissions: self.permissions)
+                .tabItem { Label("General", systemImage: "gearshape") }
+                .tag(SettingsTab.general)
 
-            AdvancedSettingsPane(settings: self.settings)
-                .tabItem { Label("Advanced", systemImage: "gearshape.2") }
-                .tag(SettingsTab.advanced)
+            TrimmingSettingsPane(settings: self.settings)
+                .tabItem { Label("Trimming", systemImage: "slider.horizontal.3") }
+                .tag(SettingsTab.trimming)
 
-            AggressivenessSettingsPane(settings: self.settings)
-                .tabItem { Label("Aggressiveness", systemImage: "speedometer") }
-                .tag(SettingsTab.aggressiveness)
+            RulesSettingsPane(settings: self.settings)
+                .tabItem { Label("Rules", systemImage: "list.bullet.rectangle.portrait") }
+                .tag(SettingsTab.rules)
 
             HotkeySettingsPane(settings: self.settings, hotkeyManager: self.hotkeyManager)
                 .tabItem { Label("Shortcuts", systemImage: "command") }
                 .tag(SettingsTab.shortcuts)
+
+            AdvancedSettingsPane(settings: self.settings)
+                .tabItem { Label("Advanced", systemImage: "wrench.and.screwdriver") }
+                .tag(SettingsTab.advanced)
 
             #if DEBUG
             if self.settings.debugPaneEnabled {
@@ -41,7 +43,6 @@ struct SettingsView: View {
                 .tabItem { Label("About", systemImage: "info.circle") }
                 .tag(SettingsTab.about)
         }
-        .padding(12)
         .frame(width: SettingsTab.windowWidth, height: SettingsTab.windowHeight, alignment: .topLeading)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onReceive(NotificationCenter.default.publisher(for: .trimmySelectSettingsTab)) { notification in
@@ -66,13 +67,13 @@ struct SettingsView: View {
 }
 
 enum SettingsTab: String, Hashable, CaseIterable, Codable {
-    case general, advanced, aggressiveness, shortcuts, about
+    case general, trimming, rules, shortcuts, advanced, about
     #if DEBUG
     case debug
     #endif
 
-    static let windowWidth: CGFloat = 430
-    static let windowHeight: CGFloat = 700
+    static let windowWidth: CGFloat = 560
+    static let windowHeight: CGFloat = 620
 }
 
 extension Notification.Name {

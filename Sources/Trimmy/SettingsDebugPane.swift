@@ -17,17 +17,23 @@ struct DebugSettingsPane: View {
     private let sampleTrimmed = "docker run --rm --volume ~/.aws:/root/.aws --env AWS_PROFILE=prod amazon/aws-cli s3 ls"
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Button("Load strikeout sample") {
-                self.monitor.debugSetPreview(original: self.sampleOriginal, trimmed: self.sampleTrimmed)
-            }
+        SettingsPaneLayout {
+            SettingsSection(
+                "Preview tools",
+                systemImage: "hammer",
+                subtitle: "Development-only actions for testing menu previews and animation.")
+            {
+                VStack(alignment: .leading, spacing: 12) {
+                    Button("Load strikeout sample") {
+                        self.monitor.debugSetPreview(original: self.sampleOriginal, trimmed: self.sampleTrimmed)
+                    }
 
-            Button("Trigger trim animation") {
-                self.monitor.triggerTrimPulse()
+                    Button("Trigger trim animation") {
+                        self.monitor.triggerTrimPulse()
+                    }
+                }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 12)
     }
 }
 #endif

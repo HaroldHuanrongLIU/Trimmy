@@ -32,11 +32,13 @@ read_when:
 9. **UI**
    - Menu bar icon/text "Trimmy" with menu items: Auto-Trim toggle, "Paste Trimmed", "Paste Reformatted Markdown" (when markdown detected), "Paste Original", status line showing last action preview, Quit.
    - General setting: “Show Markdown reformat option” (default on) toggles the menu-only markdown paste action.
-   - SwiftUI Settings window (macOS-standard Settings scene) with Aggressiveness pickers for General apps and Terminals, plus Keep blank lines and Auto-trim checkboxes.
+   - SwiftUI Settings window (macOS-standard Settings scene) organized into General, Trimming, Rules, Shortcuts, Advanced, and About tabs.
+   - Trimming contains sensitivity pickers for General apps and Terminals plus cleanup behavior.
+   - Rules contains auto-trim app/site exclusions and URL content-identity parameter rules.
 7. **Last action preview**: menu shows truncated (~70 chars) version of last trimmed command.
 8. **Accessory app**: no Dock icon, lives in menu bar; quit from menu.
 9. **Accessibility permission UX**: when Accessibility is missing, Trimmy blocks paste commands and shows actionable callouts (menu + Settings) to trigger the system prompt and open the Privacy & Security › Accessibility pane.
-10. **CLI helper**: Settings → General exposes an installer that symlinks the bundled helper into `/usr/local/bin` and `/opt/homebrew/bin` as `trimmy` for headless use.
+10. **CLI helper**: Settings → Advanced exposes an installer that symlinks the bundled helper into `/usr/local/bin` and `/opt/homebrew/bin` as `trimmy` for headless use.
 
 ## Non-Functional Requirements
 - Platform: macOS 15.0+; Swift 6; SwiftUI for UI and settings; AppKit for pasteboard access.

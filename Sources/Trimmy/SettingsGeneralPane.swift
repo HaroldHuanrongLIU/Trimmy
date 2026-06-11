@@ -1,131 +1,71 @@
 import AppKit
 import SwiftUI
-import TrimmyCore
 
 @MainActor
 struct GeneralSettingsPane: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var permissions: AccessibilityPermissionManager
 
-    private var urlQueryParamRulesSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Preserve content identity params")
-                .font(.body)
-            Text("One rule per line: domain.com: param1, param2")
-                .font(.footnote)
-                .foregroundStyle(.tertiary)
-            TextEditor(text: self.$settings.urlQueryParamCustomRules)
-                .font(.caption.monospaced())
-                .frame(height: 70)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1))
-        }
-        .padding(.leading, 20)
-    }
-
-    private var autoTrimExclusionsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Disable auto-trim for apps and sites")
-                .font(.body)
-            Text("One app name, bundle ID, or domain per line. Manual paste actions still work.")
-                .font(.footnote)
-                .foregroundStyle(.tertiary)
-
-            Text("Apps")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            TextEditor(text: self.$settings.autoTrimExcludedApps)
-                .font(.caption.monospaced())
-                .frame(height: 48)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1))
-
-            Text("Sites")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            TextEditor(text: self.$settings.autoTrimExcludedSites)
-                .font(.caption.monospaced())
-                .frame(height: 48)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1))
-        }
-        .padding(.leading, 20)
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        SettingsPaneLayout {
             if !self.permissions.isTrusted {
                 AccessibilityPermissionCallout(permissions: self.permissions)
             }
-            PreferenceToggleRow(
-                title: "Auto-trim enabled",
-                subtitle: "Automatically trim clipboard content when it looks like a command.",
-                binding: self.$settings.autoTrimEnabled)
 
-            self.autoTrimExclusionsSection
-
-            PreferenceToggleRow(
-                title: "Context-aware trimming",
-                subtitle: "Use the terminal-specific aggressiveness when a terminal is detected "
-                    + "(Cmd-C + app snapshot).",
-                binding: self.$settings.contextAwareTrimmingEnabled)
-
-            PreferenceToggleRow(
-                title: "Keep blank lines",
-                subtitle: "Preserve intentional blank lines instead of collapsing them.",
-                binding: self.$settings.preserveBlankLines)
-
-            PreferenceToggleRow(
-                title: "Remove box drawing chars (│┃)",
-                subtitle: "Strip prompt-style box gutters (any count, leading/trailing) before trimming.",
-                binding: self.$settings.removeBoxDrawing)
-
-            PreferenceToggleRow(
-                title: "Flatten Claude Code prompts",
-                subtitle: "Strip terminal decoration (❯, ───) and flatten wrapped prompts from Claude Code.",
-                binding: self.$settings.flattenClaudeCodePrompts)
-
-            PreferenceToggleRow(
-                title: "Show Markdown reformat option",
-                subtitle: "Expose a menu-only paste action that reflows markdown bullets and headings.",
-                binding: self.$settings.showMarkdownReformatOption)
-
-            PreferenceToggleRow(
-                title: "Show 'Paste without Query Params' option",
-                subtitle: "Show a menu option to paste a copied link with query parameters removed.",
-                binding: self.$settings.showURLQueryParamStripOption)
-
-            if self.settings.showURLQueryParamStripOption {
-                self.urlQueryParamRulesSection
+            SettingsSection(
+                "Automatic trimming",
+                systemImage: "scissors",
+                subtitle: "The main clipboard watcher. Manual paste actions remain available when this is off.")
+            {
+                PreferenceToggleRow(
+                    title: "Enable auto-trim",
+                    subtitle: "Automatically clean clipboard content when it looks like a command.",
+                    binding: self.$settings.autoTrimEnabled)
             }
 
-            PreferenceToggleRow(
-                title: "Hide menu bar icon",
-                subtitle: "Keep Trimmy running without showing its scissors icon in the menu bar.",
-                binding: self.$settings.hideMenuBarIcon)
+            SettingsSection(
+                "Menu actions",
+                systemImage: "menubar.rectangle",
+                subtitle: "Choose which optional transformations appear in the Trimmy menu.")
+            {
+                PreferenceToggleRow(
+                    title: "Show Markdown reformat",
+                    subtitle: "Reflow wrapped Markdown while preserving headings, lists, and code fences.",
+                    binding: self.$settings.showMarkdownReformatOption)
+            }
 
-            Divider()
-                .padding(.vertical, 4)
+            SettingsSection(
+                "App",
+                systemImage: "app.badge",
+                subtitle: "Control how Trimmy starts and appears on your Mac.")
+            {
+                VStack(alignment: .leading, spacing: 16) {
+                    PreferenceToggleRow(
+                        title: "Hide menu bar icon",
+                        subtitle: "Keep Trimmy running without showing its scissors icon.",
+                        binding: self.$settings.hideMenuBarIcon)
 
-            PreferenceToggleRow(
-                title: "Start at Login",
-                subtitle: "Automatically opens the app when you start your Mac.",
-                binding: self.$settings.launchAtLogin)
+                    Divider()
 
-            HStack {
-                Spacer()
-                Button("Quit Trimmy") {
-                    NSApp.terminate(nil)
+                    PreferenceToggleRow(
+                        title: "Start at Login",
+                        subtitle: "Launch Trimmy automatically when you sign in.",
+                        binding: self.$settings.launchAtLogin)
+
+                    Divider()
+
+                    HStack {
+                        Text("Stop the clipboard watcher and quit the app.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Quit Trimmy") {
+                            NSApp.terminate(nil)
+                        }
+                        .buttonStyle(.bordered)
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
             }
-            .padding(.top, 8)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 12)
     }
 }
