@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.1 — 2026-06-11
+## 0.10.1 — Unreleased
 - Settings: reorganize controls into clearer General, Trimming, Rules, Shortcuts, Advanced, and About tabs with a wider section-based layout.
 
 ## 0.10.0 — 2026-06-11
