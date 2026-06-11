@@ -2,6 +2,23 @@
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
         <item>
+            <title>0.10.0</title>
+            <pubDate>Thu, 11 Jun 2026 08:22:07 +0100</pubDate>
+            <link>https://raw.githubusercontent.com/steipete/Trimmy/main/appcast.xml</link>
+            <sparkle:version>30</sparkle:version>
+            <sparkle:shortVersionString>0.10.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<h2>Trimmy 0.10.0</h2>
+<ul>
+<li>Auto-trim can now be disabled for configured apps and browser sites while keeping manual paste actions available (#15).</li>
+<li>Menu: add an optional “Paste without Query Params” action for copied URLs, gated by Settings → General and preserving configured content-identity parameters (#27, thanks @danfooo).</li>
+<li>Menu paste-action badges now show a single clear character count instead of duplicate “trimmed” counters (#27, thanks @danfooo).</li>
+</ul>
+<p><a href="https://github.com/steipete/Trimmy/blob/main/CHANGELOG.md">View full changelog</a></p>
+]]></description>
+            <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.10.0/Trimmy-0.10.0.zip" length="2679478" type="application/octet-stream" sparkle:edSignature="xACHr2XqXIQIDeLFHQqRvg9FZC9UCtFzuvC50guWk/kxa2uDXYXpN6Fx8Pob9PIAIkELdkNu6Jm27VwxfWFcDw=="/>
+        </item>
+        <item>
             <title>0.9.0</title>
             <pubDate>Mon, 11 May 2026 12:56:20 +0100</pubDate>
             <link>https://raw.githubusercontent.com/steipete/Trimmy/main/appcast.xml</link>
@@ -34,15 +51,6 @@
 <p><a href="https://github.com/steipete/Trimmy/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
             <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.8.0/Trimmy-0.8.0.zip" length="2614209" type="application/octet-stream" sparkle:edSignature="IhZI64vmnT/SV7m3byb3r5rO9xYMxStwuGFS10r+2XjMpvbJrXy8dHj3Ete56b8ynGDz59312IpzFb3vhTXJCw=="/>
-        </item>
-        <item>
-            <title>0.7.0</title>
-            <pubDate>Tue, 30 Dec 2025 03:43:38 +0100</pubDate>
-            <link>https://raw.githubusercontent.com/steipete/Trimmy/main/appcast.xml</link>
-            <sparkle:version>27</sparkle:version>
-            <sparkle:shortVersionString>0.7.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/steipete/Trimmy/releases/download/v0.7.0/Trimmy-0.7.0.zip" length="2600177" type="application/octet-stream" sparkle:edSignature="B+bEH+Xyqqaj6TiufWSyxHl0Ag1oKCrR32RGAlFa2kQQ9E3ahzAemQ49ZW6yUEWHNG/jJMJKq/3vVQ8AGj+tDw=="/>
         </item>
         <title>Trimmy</title>
     </channel>
