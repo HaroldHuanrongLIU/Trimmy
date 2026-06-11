@@ -265,6 +265,71 @@ struct ClipboardMonitorTests {
     }
 
     @Test
+    func `site exclusions fail closed when browser location is unavailable`() {
+        let settings = AppSettings()
+        settings.autoTrimEnabled = true
+        settings.autoTrimExcludedSites = "grok.com"
+        defer { settings.autoTrimExcludedSites = "" }
+        let pasteboard = makeTestPasteboard()
+        let browserLocationProvider = StubBrowserLocationProvider(host: nil)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission(),
+            browserLocationProvider: browserLocationProvider)
+        let sourceContext = ClipboardSourceContext(
+            timestamp: Date(),
+            capture: .eventTap,
+            bundleIdentifier: "com.google.Chrome",
+            appName: "Google Chrome",
+            processIdentifier: nil)
+
+        pasteboard.setString(
+            """
+            echo hi \\
+            ls -la
+            """,
+            forType: .string)
+
+        #expect(monitor.trimClipboardIfNeeded(force: false, sourceContext: sourceContext) == false)
+        #expect(browserLocationProvider.callCount == 1)
+        #expect(pasteboard.string(forType: .string)?.contains(where: \.isNewline) == true)
+        #expect(monitor.lastSummary.contains("Google Chrome"))
+    }
+
+    @Test
+    func `site exclusions do not affect unsupported apps`() {
+        let settings = AppSettings()
+        settings.autoTrimEnabled = true
+        settings.autoTrimExcludedSites = "grok.com"
+        defer { settings.autoTrimExcludedSites = "" }
+        let pasteboard = makeTestPasteboard()
+        let browserLocationProvider = StubBrowserLocationProvider(host: nil)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission(),
+            browserLocationProvider: browserLocationProvider)
+        let sourceContext = ClipboardSourceContext(
+            timestamp: Date(),
+            capture: .eventTap,
+            bundleIdentifier: "com.apple.TextEdit",
+            appName: "TextEdit",
+            processIdentifier: nil)
+
+        pasteboard.setString(
+            """
+            echo hi \\
+            ls -la
+            """,
+            forType: .string)
+
+        #expect(monitor.trimClipboardIfNeeded(force: false, sourceContext: sourceContext))
+        #expect(browserLocationProvider.callCount == 0)
+        #expect(pasteboard.string(forType: .string)?.contains(where: \.isNewline) == false)
+    }
+
+    @Test
     func `disabling auto trim stops further automatic trims`() {
         let settings = AppSettings()
         settings.autoTrimEnabled = true

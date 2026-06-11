@@ -5,6 +5,11 @@ protocol BrowserLocationProviding {
 }
 
 struct BrowserLocationProvider: BrowserLocationProviding {
+    static func supports(_ sourceContext: ClipboardSourceContext) -> Bool {
+        guard let bundleIdentifier = sourceContext.bundleIdentifier else { return false }
+        return Self.script(for: bundleIdentifier) != nil
+    }
+
     func currentHost(for sourceContext: ClipboardSourceContext) -> String? {
         guard let bundleIdentifier = sourceContext.bundleIdentifier,
               let script = Self.script(for: bundleIdentifier)

@@ -256,9 +256,14 @@ final class ClipboardMonitor: ObservableObject {
             sourceName = sourceContext.appName ?? sourceContext.bundleIdentifier ?? "this app"
         } else {
             guard self.settings.hasAutoTrimSiteExclusions else { return false }
+            guard BrowserLocationProvider.supports(sourceContext) else { return false }
             let host = self.browserLocationProvider.currentHost(for: sourceContext)
-            guard self.settings.excludesAutoTrimSite(host: host) else { return false }
-            sourceName = host ?? sourceContext.appName ?? sourceContext.bundleIdentifier ?? "this site"
+            if let host {
+                guard self.settings.excludesAutoTrimSite(host: host) else { return false }
+                sourceName = host
+            } else {
+                sourceName = sourceContext.appName ?? sourceContext.bundleIdentifier ?? "this browser"
+            }
         }
 
         let currentText = self.readTextFromPasteboard(ignoreMarker: false)
