@@ -22,12 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name || inputs.ref }}
 
       - name: Setup Swift 6.2.1
-        uses: swift-actions/setup-swift@v2
+        uses: swift-actions/setup-swift@v2.4.0
         with:
           swift-version: "6.2.1"
 
@@ -80,7 +80,7 @@ jobs:
 
       - name: Upload workflow artifact (manual runs)
         if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: trimmycli-linux
           path: |

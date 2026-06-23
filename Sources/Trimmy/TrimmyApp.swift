@@ -43,6 +43,10 @@ struct TrimmyApp: App {
             ScissorStatusLabel(monitor: self.monitor, isEnabled: self.settings.autoTrimEnabled)
                 .background(SettingsOpener())
         }
+        .menuBarExtraAccess(isPresented: self.$isMenuPresented) { item in
+            self.statusItem = item
+            self.applyStatusItemAppearance()
+        }
         Settings {
             SettingsView(
                 settings: self.settings,
@@ -54,10 +58,6 @@ struct TrimmyApp: App {
                     self.startupDiagnostics.logAccessibilityStatus()
                 }
                 .scenePadding()
-        }
-        .menuBarExtraAccess(isPresented: self.$isMenuPresented) { item in
-            self.statusItem = item
-            self.applyStatusItemAppearance()
         }
         .onChange(of: self.settings.autoTrimEnabled) { _, _ in
             self.applyStatusItemAppearance()
